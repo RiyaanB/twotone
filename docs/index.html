@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Twotone — a calm daily sun &amp; moon logic puzzle</title>
+<meta name="description" content="Twotone is a calm daily logic puzzle. Fill the grid with suns and moons so every row and column is balanced, with no three in a row and every = and × clue respected. One solution, no guessing.">
+<meta name="theme-color" content="#F5F0E6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#151729" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Twotone — daily sun &amp; moon logic puzzle">
+<meta property="og:description" content="Balance the suns and moons. A new puzzle every day — one solution, no guessing.">
+<meta property="og:image" content="og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="css/style.css">
+<script>
+  // Apply saved theme before first paint to avoid a flash.
+  try { var s = JSON.parse(localStorage.getItem('twotone:v1') || '{}'); var t = s.settings && s.settings.theme; if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+</head>
+<body data-screen="home">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-sun" viewBox="0 0 100 100">
+      <g class="sun-rays" stroke="currentColor" stroke-width="7" stroke-linecap="round">
+        <line x1="50" y1="8" x2="50" y2="19"/><line x1="50" y1="81" x2="50" y2="92"/>
+        <line x1="8" y1="50" x2="19" y2="50"/><line x1="81" y1="50" x2="92" y2="50"/>
+        <line x1="20.3" y1="20.3" x2="28.1" y2="28.1"/><line x1="71.9" y1="71.9" x2="79.7" y2="79.7"/>
+        <line x1="20.3" y1="79.7" x2="28.1" y2="71.9"/><line x1="71.9" y1="28.1" x2="79.7" y2="20.3"/>
+      </g>
+      <circle cx="50" cy="50" r="21" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-moon" viewBox="0 0 100 100">
+      <path fill="currentColor" d="M62 14a36 36 0 1 0 24 58A30 30 0 0 1 62 14z"/>
+    </symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M9 14 4 9l5-5M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></symbol>
+    <symbol id="i-hint" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M9 18h6M10 21.5h4M12 2.5a6.5 6.5 0 0 0-3.8 11.8c.5.4.8 1 .8 1.7h6c0-.7.3-1.3.8-1.7A6.5 6.5 0 0 0 12 2.5z"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></g></symbol>
+    <symbol id="i-eye-off" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.6 5.1A10.6 10.6 0 0 1 12 5c6.4 0 10 7 10 7a17.4 17.4 0 0 1-2.6 3.4M6.6 6.6C3.7 8.4 2 12 2 12s3.6 7 10 7c1.9 0 3.6-.6 5-1.5M9.9 9.9a3 3 0 0 0 4.2 4.2M3 3l18 18"/></g></symbol>
+    <symbol id="i-restart" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M15 5l-7 7 7 7"/></symbol>
+    <symbol id="i-sound" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5v14l-4.5-4.5H4z"/><path d="M15.5 9a4.5 4.5 0 0 1 0 6M18.5 6a8.5 8.5 0 0 1 0 12"/></g></symbol>
+    <symbol id="i-mute" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5v14l-4.5-4.5H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></g></symbol>
+    <symbol id="i-stats" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M5 20v-6M10 20V9M15 20v-9M20 20V4"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></g></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M9.2 9.2a2.9 2.9 0 0 1 5.6 1c0 1.9-2.8 2.6-2.8 2.6M12 17h.01"/></g></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></g></symbol>
+    <symbol id="i-bot" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 8V4.5M12 4.5h.01M9 13h.01M15 13h.01M9.5 17h5"/></g></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2c.6 3.2 2.4 4.7 4 6.4 1.6 1.7 3 3.6 3 6.6a7 7 0 0 1-14 0c0-2.6 1.2-4.4 2.6-5.6.2 1.8 1 3 2.4 3.6C9.5 9.4 10.4 5.4 12 2z"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.6"/></g></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></g></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M5 12h13M13 6l6 6-6 6"/></symbol>
+    <symbol id="logo" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="46" fill="var(--moon)"/>
+      <path d="M50 4a46 46 0 0 0 0 92z" fill="var(--sun)"/>
+      <circle cx="31" cy="50" r="11" fill="var(--logo-ink)"/>
+      <path d="M74 36a15 15 0 1 0 6 24 12.5 12.5 0 0 1-6-24z" fill="var(--logo-ink)"/>
+    </symbol>
+  </defs>
+</svg>
+
+<main id="app">
+  <!-- HOME -->
+  <section class="screen" id="screen-home" aria-label="Home">
+    <div class="topbar home-bar">
+      <button class="icon-btn" data-action="help" aria-label="How to play" title="How to play (?)"><svg><use href="#i-help"/></svg></button>
+      <span class="spacer"></span>
+      <button class="icon-btn" data-action="stats" aria-label="Statistics" title="Statistics"><svg><use href="#i-stats"/></svg></button>
+      <button class="icon-btn" data-action="settings" aria-label="Settings" title="Settings"><svg><use href="#i-gear"/></svg></button>
+      <button class="icon-btn sound-btn" data-action="sound" aria-label="Toggle sound" title="Sound (M)"><svg><use href="#i-sound"/></svg></button>
+    </div>
+    <div class="home-body">
+      <div class="hero">
+        <svg class="logo" aria-hidden="true"><use href="#logo"/></svg>
+        <h1>Twotone</h1>
+        <p class="tagline">Balance the suns and moons.</p>
+      </div>
+      <div class="menu">
+        <button class="card card-daily" id="btn-daily">
+          <span class="card-icon"><svg><use href="#i-cal"/></svg></span>
+          <span class="card-text">
+            <span class="card-title">Daily <span id="daily-num"></span></span>
+            <span class="card-sub" id="daily-sub">Today’s puzzle</span>
+          </span>
+          <span class="card-side" id="daily-side"></span>
+        </button>
+        <button class="card" id="btn-practice">
+          <span class="card-icon"><svg><use href="#i-grid"/></svg></span>
+          <span class="card-text">
+            <span class="card-title">Practice</span>
+            <span class="card-sub">Endless puzzles · 4 sizes</span>
+          </span>
+          <span class="card-side"><svg class="chev"><use href="#i-arrow"/></svg></span>
+        </button>
+        <button class="card" id="btn-race">
+          <span class="card-icon"><svg><use href="#i-bot"/></svg></span>
+          <span class="card-text">
+            <span class="card-title">Race the bots</span>
+            <span class="card-sub">You vs 3 computer bots</span>
+          </span>
+          <span class="card-side"><svg class="chev"><use href="#i-arrow"/></svg></span>
+        </button>
+      </div>
+      <button class="link-btn warm-link" id="btn-warmup" hidden>New here? Warm up with a 6×6 Easy first →</button>
+      <footer class="home-foot">
+        <button class="link-btn" data-action="help">How to play</button>
+        <span aria-hidden="true">·</span>
+        <a class="link-btn" href="../arcade/">More games</a>
+      </footer>
+    </div>
+  </section>
+
+  <!-- PRACTICE -->
+  <section class="screen" id="screen-practice" aria-label="Practice" hidden>
+    <div class="topbar">
+      <button class="icon-btn" data-action="home" aria-label="Back"><svg><use href="#i-back"/></svg></button>
+      <h2 class="bar-title">Practice</h2>
+      <span class="icon-btn-space"></span>
+    </div>
+    <div class="pick-body">
+      <p class="pick-lead">Pick a size. Every puzzle has one solution and can be solved by logic alone.</p>
+      <div class="diff-list" id="practice-list"></div>
+    </div>
+  </section>
+
+  <!-- RACE SETUP -->
+  <section class="screen" id="screen-race" aria-label="Race the bots" hidden>
+    <div class="topbar">
+      <button class="icon-btn" data-action="home" aria-label="Back"><svg><use href="#i-back"/></svg></button>
+      <h2 class="bar-title">Race the bots</h2>
+      <span class="icon-btn-space"></span>
+    </div>
+    <div class="pick-body">
+      <p class="pick-lead">Same puzzle, four solvers. You race three computer-controlled bots shown as progress bars.</p>
+      <div class="roster" id="race-roster"></div>
+      <div class="chips" id="race-sizes" role="radiogroup" aria-label="Puzzle size"></div>
+      <button class="btn btn-primary btn-wide" id="btn-race-start">Start race</button>
+    </div>
+  </section>
+
+  <!-- GAME -->
+  <section class="screen" id="screen-game" aria-label="Puzzle" hidden>
+    <div class="game-side">
+      <div class="topbar game-bar">
+        <button class="icon-btn" data-action="leave" aria-label="Back" title="Back (Esc)"><svg><use href="#i-back"/></svg></button>
+        <div class="game-title">
+          <span class="gt-mode" id="gt-mode">Daily</span>
+          <span class="gt-sub" id="gt-sub">8×8</span>
+        </div>
+        <span class="timer" id="timer" aria-label="Time">0:00</span>
+        <button class="icon-btn sound-btn" data-action="sound" aria-label="Toggle sound" title="Sound (M)"><svg><use href="#i-sound"/></svg></button>
+      </div>
+      <div class="race-bars" id="race-bars" hidden></div>
+    </div>
+    <div class="board-wrap" id="board-wrap">
+      <div class="rules-strip" id="rules-strip" aria-label="Rules"></div>
+      <div class="board" id="board" role="grid" aria-label="Puzzle grid"></div>
+      <div class="countdown" id="countdown" hidden></div>
+    </div>
+    <div class="game-foot">
+      <div class="status" id="status" aria-live="polite"></div>
+      <nav class="toolbar" aria-label="Puzzle tools">
+        <button class="tool" id="tool-undo" title="Undo (Z)"><svg><use href="#i-undo"/></svg><span>Undo</span></button>
+        <button class="tool" id="tool-hint" title="Hint (H)"><svg><use href="#i-hint"/></svg><span>Hint</span></button>
+        <button class="tool" id="tool-errors" title="Highlight rule breaks (E)" aria-pressed="true"><svg><use href="#i-eye"/></svg><span>Checks</span></button>
+        <button class="tool" id="tool-restart" title="Clear board (R)"><svg><use href="#i-restart"/></svg><span>Clear</span></button>
+      </nav>
+    </div>
+  </section>
+</main>
+
+<div class="modal" id="modal" hidden>
+  <div class="modal-card" id="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title"></div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="fx" id="fx" aria-hidden="true"></div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

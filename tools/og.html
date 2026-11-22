@@ -1,0 +1,24 @@
+<!doctype html><html data-theme="light"><head><meta charset="utf-8"><link rel="stylesheet" href="../docs/css/style.css">
+<style>
+body{overflow:hidden;width:1200px;height:630px;display:flex;align-items:center;gap:56px;padding:0 70px;background:radial-gradient(120% 90% at 20% 10%,#FFFDF8,#F5F0E6 60%)}
+.l{flex:1}.l h1{font-size:104px;margin:0;font-weight:900;letter-spacing:-.04em;line-height:1}
+.l p{font-size:34px;color:var(--muted);font-weight:700;margin:14px 0 26px;line-height:1.25}
+.lg{width:120px;height:120px;margin-bottom:18px}
+.pill{display:inline-flex;gap:10px;align-items:center;background:var(--ink);color:var(--bg);font-weight:800;font-size:24px;padding:12px 22px;border-radius:999px}
+#b{--cell:66px;--gap:7px;--clue:24px;--n:6}
+</style></head><body>
+<div class="l"><svg class="lg"><use href="#logo"/></svg><h1>Twotone</h1><p>Balance the suns and moons.<br>One solution. No guessing.</p><span class="pill">A new puzzle every day</span></div>
+<div class="board" id="b"></div>
+<script type="module">
+import * as L from '../docs/js/logic.js';
+const svg = await (await fetch('../docs/index.html')).text();
+const defs = svg.match(/<svg width="0"[\s\S]*?<\/svg>\n/)[0];
+document.body.insertAdjacentHTML('afterbegin', defs);
+const p = L.generate('easy6','og-image');
+const b = document.getElementById('b');
+const show = L.makeRng('og2');
+p.solution.forEach((v,i)=>{ const filled = p.givens[i] || show()<0.55; const c=document.createElement('div'); c.className='cell'; c.dataset.v = filled? v:0; c.dataset.given = p.givens[i]?1:0; c.innerHTML=`<svg><use href="${v===1?'#i-sun':'#i-moon'}"/></svg>`; b.appendChild(c); });
+const cell=66,gap=7;
+for (const e of L.edgeList(p)) { const d=document.createElement('div'); d.className='clue'; let x,y; if(e.type==='h'){const r=Math.floor(e.i/5),c=e.i%5; x=gap+(c+1)*cell+c*gap+gap/2; y=gap+r*(cell+gap)+cell/2;} else {const r=Math.floor(e.i/6),c=e.i%6; x=gap+c*(cell+gap)+cell/2; y=gap+(r+1)*cell+r*gap+gap/2;} d.style.left=x+'px'; d.style.top=y+'px'; d.innerHTML=`<svg viewBox="0 0 20 20"><path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" d="${e.clue===1?'M4.5 7.2h11M4.5 12.8h11':'M5.5 5.5l9 9M14.5 5.5l-9 9'}"/></svg>`; b.appendChild(d); }
+document.body.dataset.ready = 1;
+</script></body></html>

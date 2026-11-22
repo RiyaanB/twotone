@@ -1,0 +1,7 @@
+.claude/
+node_modules/
+BRIEF.md
+STATUS.md
+MULTIPLAYER.md
+*.log
+.env
