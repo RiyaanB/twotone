@@ -100,6 +100,7 @@ async function waitResult(page, mode) {
 async function runViewport(browser, vp) {
   console.log(`\n▶ ${vp.name}`);
   const ctx = await browser.newContext({ ...vp.opts });
+  await ctx.route(/gc\.zgo\.at|goatcounter\.com/, (r) => r.fulfill({ status: 200, contentType: 'text/javascript', body: '' })); // analytics stubbed in tests
   await ctx.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: BASE }).catch(() => {});
   const page = await ctx.newPage();
   const errors = [];
@@ -122,7 +123,7 @@ async function runViewport(browser, vp) {
   await page.waitForTimeout(300);
   await shot('04-title');
   await noOverflow(page, `${vp.name} title`);
-  const extLinks = await page.evaluate(() => [...document.querySelectorAll('link[href], script[src], img[src]')].map((e) => e.href || e.src).filter((u) => !u.startsWith(location.origin)));
+  const extLinks = await page.evaluate(() => [...document.querySelectorAll('link[href], script[src], img[src]')].map((e) => e.href || e.src).filter((u) => !u.startsWith(location.origin) && !/gc\.zgo\.at/.test(u)));
   check(extLinks.length === 0, `${vp.name}: no external resources (${extLinks.join(', ')})`);
   check(await page.getAttribute('a[href="../arcade/"]', 'href') === '../arcade/', `${vp.name}: More games link`);
 
@@ -381,6 +382,7 @@ async function runViewport(browser, vp) {
 async function landscape(browser) {
   console.log('\n▶ landscape 960x540');
   const ctx = await browser.newContext({ viewport: { width: 960, height: 540 } });
+  await ctx.route(/gc\.zgo\.at|goatcounter\.com/, (r) => r.fulfill({ status: 200, contentType: 'text/javascript', body: '' })); // analytics stubbed in tests
   const page = await ctx.newPage();
   const errors = [];
   page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
